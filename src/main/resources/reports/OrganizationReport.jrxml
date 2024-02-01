@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="OrganizationReport" pageWidth="595" pageHeight="800" columnWidth="515" leftMargin="40" rightMargin="40" topMargin="50" bottomMargin="25" uuid="0bb3792b-2400-4fdf-b19f-7928164e6ce1">
+	<style name="Sans_Normal" isDefault="true" fontName="Liberation Sans" fontSize="12" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<style name="Sans_Bold" fontName="Liberation Sans" fontSize="11" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
+	<parameter name="Organization" class="java.lang.String"/>
+	<parameter name="Logo" class="java.lang.String"/>
+	<parameter name="ClusterCount" class="java.lang.Long"/>
+	<parameter name="EnvironmentCount" class="java.lang.Long"/>
+	<parameter name="minDate" class="java.lang.String"/>
+	<parameter name="maxDate" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select id from environment limit 1]]>
+	</queryString>
+	<field name="id"/>
+	<variable name="TodayDate" class="java.lang.String" calculation="System">
+		<initialValueExpression><![CDATA[new SimpleDateFormat("dd/MM/yy").format(new Date())]]></initialValueExpression>
+	</variable>
+	<title>
+		<band height="80">
+			<line>
+				<reportElement x="0" y="0" width="515" height="1" forecolor="#142B52" uuid="e0ec7d71-dc76-4986-90ac-fa9af901b74d"/>
+			</line>
+			<textField evaluationTime="Report">
+				<reportElement style="Sans_Normal" x="400" y="2" width="115" height="15" forecolor="#142B52" uuid="e91bf12a-23a3-4fbf-94e8-599618c73376"/>
+				<textElement textAlignment="Left">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Created Date: " + $V{TodayDate}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Sans_Normal" x="400" y="17" width="115" height="15" forecolor="#142B52" uuid="e82bf12a-23a3-4fbf-94e8-599618c73376"/>
+				<textElement textAlignment="Left">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Environment Count: " + $P{EnvironmentCount}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Sans_Normal" x="400" y="32" width="225" height="15" forecolor="#142B52" uuid="e82bf12a-23a3-4fbf-94e8-599618c73376"/>
+				<textElement textAlignment="Left">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Cluster Count: " + $P{ClusterCount}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Sans_Normal" x="400" y="47" width="225" height="15" forecolor="#142B52" uuid="e82bf12a-33a3-4fbf-94e8-599618c73376"/>
+				<textElement textAlignment="Left">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Metrics From: " + $P{minDate}]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement style="Sans_Normal" x="400" y="62" width="225" height="15" forecolor="#142B52" uuid="e82bf12a-43a3-4fbf-94e8-599618c73376"/>
+				<textElement textAlignment="Left">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Metrics To: " + $P{maxDate}]]></textFieldExpression>
+			</textField>
+			<image>
+				<reportElement x="0" y="10" width="100" height="47"/>
+				<imageExpression><![CDATA[$P{Logo}]]></imageExpression>
+			</image>
+			<staticText>
+				<reportElement style="Sans_Normal" forecolor="#142B52" x="0" y="10" width="515" height="30" uuid="44eb0c30-969f-4758-961d-9f606cf9bd6a"/>
+				<textElement textAlignment="Center">
+					<font size="22"/>
+				</textElement>
+				<text><![CDATA[Organization Report]]></text>
+			</staticText>
+			<textField evaluationTime="Report">
+				<reportElement style="Sans_Normal" forecolor="#142B52" x="0" y="40" width="515" height="30" uuid="e81bf12a-23a3-4fbf-94e8-599618c73376"/>
+				<textElement textAlignment="Center">
+					<font size="18"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{Organization}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="78" width="500" height="1" forecolor="#142B52" uuid="e0ec7d72-dc76-4986-90ac-fa9af901b74d"/>
+			</line>
+		</band>
+	</title>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<subreport>
+				<reportElement isPrintRepeatedValues="false" x="0" y="0" width="500" height="20" backcolor="#FFCC99" uuid="92506c8a-e250-4f4b-826c-693b1df74d11"/>
+				<subreportParameter name="percentCondition">
+					<subreportParameterExpression><![CDATA["> 90"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="order">
+					<subreportParameterExpression><![CDATA["DESC"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["ClusterUtilization.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="22" splitType="Stretch">
+			<break>
+				<reportElement x="0" y="1" width="500" height="1"></reportElement>
+			</break>
+			<subreport>
+				<reportElement isPrintRepeatedValues="false" x="0" y="2" width="500" height="20" isRemoveLineWhenBlank="true" backcolor="#FFCC99" uuid="92506c8a-e250-5f4b-826c-693b1df74d11"/>
+				<subreportParameter name="percentCondition">
+					<subreportParameterExpression><![CDATA["< 10"]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="order">
+					<subreportParameterExpression><![CDATA["ASC"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["ClusterUtilization.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="22" splitType="Stretch">
+			<break>
+				<reportElement x="0" y="1" width="500" height="1"></reportElement>
+			</break>
+			<subreport>
+				<reportElement isPrintRepeatedValues="false" x="0" y="2" width="500" height="20" isRemoveLineWhenBlank="true" backcolor="#FFCC99" uuid="62506c8a-e250-5f4b-826c-693b1df74d11"/>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["SchemaCount.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="22" splitType="Stretch">
+			<break>
+				<reportElement x="0" y="1" width="500" height="1"></reportElement>
+			</break>
+			<subreport runToBottom="true">
+				<reportElement isPrintRepeatedValues="false" x="0" y="2" width="500" height="20" isRemoveLineWhenBlank="true" backcolor="#FFCC99" uuid="93506c8a-e251-5f4b-826d-693b1df74d12"/>
+				<subreportParameter name="minDate">
+					<subreportParameterExpression><![CDATA[$P{minDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="maxDate">
+					<subreportParameterExpression><![CDATA[$P{maxDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["EnvironmentReport.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+		<band height="22" splitType="Stretch">
+			<break>
+				<reportElement x="0" y="1" width="500" height="1"></reportElement>
+			</break>
+			<subreport runToBottom="true">
+				<reportElement isPrintRepeatedValues="false" x="0" y="2" width="500" height="20" isRemoveLineWhenBlank="true" backcolor="#FFCC99" uuid="93506c8a-e250-5f4b-826d-693b1df74d12"/>
+				<subreportParameter name="minDate">
+					<subreportParameterExpression><![CDATA[$P{minDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="maxDate">
+					<subreportParameterExpression><![CDATA[$P{maxDate}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA["ClusterStorageGrowth.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="28">
+			<line>
+				<reportElement x="0" y="5" width="515" height="1" forecolor="#142B52" uuid="e7aa0550-b99b-4f3c-80d6-8baabe706e88"/>
+			</line>
+			<textField>
+				<reportElement x="200" y="13" width="80" height="15" uuid="7737d093-22a3-402a-898d-3aabb7416b0f"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page " + String.valueOf($V{PAGE_NUMBER}) + " of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="280" y="13" width="75" height="15" uuid="6877348f-c11e-44dd-a5c2-53f20d83c321"/>
+				<textFieldExpression><![CDATA[" " + String.valueOf($V{PAGE_NUMBER})]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<noData>
+		<band height="30">
+			<frame>
+				<reportElement x="0" y="2" width="500" height="22" forecolor="#FFFFFF" backcolor="#006B95" uuid="0419982f-341b-4c98-90f0-87119c7d6f48"/>
+				<box>
+					<pen lineWidth="1.0"/>
+				</box>
+				<staticText>
+					<reportElement x="0" y="40" width="500" height="20" forecolor="#142B52"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font size="12" />
+					</textElement>
+					<text><![CDATA[<< No Data Available >>]]></text>
+				</staticText>
+			</frame>
+		</band>
+	</noData>
+</jasperReport>

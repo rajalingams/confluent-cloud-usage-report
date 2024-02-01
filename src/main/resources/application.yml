@@ -1,0 +1,79 @@
+confluent:
+  cloud:
+    organization: ${ORG_NAME:""}
+    apiKey: ${METRICS_API_KEY}
+    apiSecret: ${METRICS_API_SECRET}
+    cloudEndPoints:
+      environmentList: https://api.confluent.cloud/org/v2/environments?page_size=100
+      clusterList: https://api.confluent.cloud/cmk/v2/clusters?environment=%s&page_size=100
+      srList: https://api.confluent.cloud/srcm/v3/clusters?environment=%s&page_size=100
+    metrics:
+      endpoint: https://api.telemetry.confluent.cloud/v2/metrics/cloud/query
+      definitions:
+        kafka:
+          - name: "io.confluent.kafka.server/received_bytes"
+            transformation: BYTES_TO_MB_PER_SEC
+            metricsLimit: "Ingress (Mb/s)"
+            category: Utilization
+          - name: "io.confluent.kafka.server/sent_bytes"
+            transformation: BYTES_TO_MB_PER_SEC
+            metricsLimit: "Egress (Mb/s)"
+            category: Utilization
+          - name: "io.confluent.kafka.server/retained_bytes"
+            transformation: BYTES_TO_GB
+            metricsLimit: "Storage (Gb)"
+            category: Storage
+          - name: "io.confluent.kafka.server/active_connection_count"
+            metricsLimit: "Client connections (Count)"
+            category: Utilization
+          - name: "io.confluent.kafka.server/partition_count"
+            metricsLimit: "Partitions (Count)"
+            category: Utilization
+          - name: "io.confluent.kafka.server/cluster_load_percent"
+            transformation: PERCENT
+            metricsLimit: "Cluster Load (%)"
+            category: Utilization
+        schema_registry:
+          - name: "io.confluent.kafka.schema_registry/schema_count"
+            metricsLimit: "Schema Count"
+            category: Utilization
+    reporting:
+      refreshData: true
+      dataRetentionDays: ${DATA_RETENTION_DAYS:30}
+      outputDir: ${OUTPUT_DIR}/
+      tmpDir: ${TMP_DIR:/tmp}/confluent/
+      limitsFileLocation: classpath:static/CloudLimits.csv
+      srLimitsFileLocation: classpath:static/SRLimits.csv
+      confluentLogo: classpath:static/ConfluentLogo.jpeg
+      reportList:
+        - beanName: jasperPDFGenerator
+          isEnabled: ${GENERATE_PDF:true}
+          args:
+            jasperReportList: MetricsReport,ClusterReport,ClusterUtilization,ClusterStorageGrowth,EnvironmentReport,SchemaCount,OrganizationReport
+            mainReportList: OrganizationReport
+        - beanName: sqlCSVGenerator
+          isEnabled: ${GENERATE_CSV:true}
+          args:
+            sqlFileList: OrganizationReport
+
+resilience4j:
+  ratelimiter:
+    instances:
+      rpm_limiter:
+        limitForPeriod: 40
+        limitRefreshPeriod: 1m
+        timeoutDuration: 1m
+  retry:
+    instances:
+      api_retry:
+        maxRetryAttempts: 3
+        waitDuration: 1m
+
+spring:
+  datasource:
+    url: jdbc:hsqldb:mem:testdb
+  jpa:
+    hibernate:
+      generate-ddl: true
+      ddl-auto: update
+
